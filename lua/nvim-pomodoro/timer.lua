@@ -13,9 +13,39 @@ local state = {
   running      = false,
   handle       = nil,
   opts         = {},
-  on_tick      = nil,   -- saved so resume() can restart without re-passing callbacks
+  on_tick      = nil,
   on_done      = nil,
+  notified     = {},   -- tracks which milestones have fired this session
 }
+
+local MILESTONES = {
+  { secs = 300, msg = "⏳ 5 minutes left!"  },
+  { secs = 120, msg = "⏰ 2 minutes left!"  },
+  { secs = 60,  msg = "⚡ 1 minute left!"   },
+  { secs = 30,  msg = "🔔 30 seconds left!" },
+}
+
+local session_labels = {
+  [M.SESSION.FOCUS]       = "🍅 Focus",
+  [M.SESSION.SHORT_BREAK] = "☕ Short Break",
+  [M.SESSION.LONG_BREAK]  = "🛌 Long Break",
+}
+
+local function notify_milestone(secs)
+  for _, m in ipairs(MILESTONES) do
+    if secs == m.secs and not state.notified[m.secs] then
+      state.notified[m.secs] = true
+      vim.notify(
+        string.format("%s — %s", session_labels[state.session] or "Session", m.msg),
+        vim.log.levels.WARN,
+        {
+          title   = "Pomodoro",
+          timeout = 8000,   -- 8 s so it stays visible
+        }
+      )
+    end
+  end
+end
 
 -- ── helpers ────────────────────────────────────────────────────────────────
 
@@ -55,6 +85,7 @@ function M.setup(opts)
   state.running      = false
   state.on_tick      = nil
   state.on_done      = nil
+  state.notified     = {}
   stop_handle()
 end
 
@@ -73,6 +104,9 @@ function M.start(on_tick, on_done)
     if state.on_tick then
       state.on_tick(state.session, state.seconds_left)
     end
+
+    -- fire milestone notifications before decrementing
+    notify_milestone(state.seconds_left)
 
     if state.seconds_left <= 0 then
       local finished     = state.session
@@ -131,6 +165,7 @@ function M.switch_session(session)
   M.stop()
   state.session      = session
   state.seconds_left = session_duration(session, state.opts)
+  state.notified     = {}
 end
 
 return M
