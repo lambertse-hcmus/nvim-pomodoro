@@ -192,14 +192,6 @@ local function on_done(finished, nxt)
   end
 
   render()
-
-  timer.start(
-    function(session, _)
-      state.active = session
-      if is_open() then render() end
-    end,
-    on_done
-  )
 end
 
 local function toggle_session()
@@ -351,11 +343,6 @@ function M.detach()
   state.win      = nil
   state.buf      = nil
   state.detached = true
-  vim.notify(
-    "Pomodoro timer is running in the background.",
-    vim.log.levels.INFO,
-    { title = "Pomodoro" }
-  )
 end
 
 function M.toggle()

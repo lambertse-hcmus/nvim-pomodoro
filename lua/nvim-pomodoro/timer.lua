@@ -23,6 +23,7 @@ local MILESTONES = {
   { secs = 120, msg = "⏰ 2 minutes left!"  },
   { secs = 60,  msg = "⚡ 1 minute left!"   },
   { secs = 30,  msg = "🔔 30 seconds left!" },
+  { secs = 10,  msg = "⏱️ 10 seconds left!" },
 }
 
 local session_labels = {
