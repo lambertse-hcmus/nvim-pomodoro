@@ -15,7 +15,7 @@ local state = {
   opts         = {},
   on_tick      = nil,
   on_done      = nil,
-  notified     = {},   -- tracks which milestones have fired this session
+  notified     = {},   
 }
 
 local MILESTONES = {
@@ -41,7 +41,7 @@ local function notify_milestone(secs)
         vim.log.levels.WARN,
         {
           title   = "Pomodoro",
-          timeout = 8000,   -- 8 s so it stays visible
+          timeout = 8000,   
         }
       )
     end
@@ -93,7 +93,13 @@ end
 function M.start(on_tick, on_done)
   if state.running then return end
 
-  -- persist callbacks so resume() works without arguments
+  -- Kill any orphaned handle from a previous load
+  stop_handle()
+
+  state.on_tick = on_tick
+  state.on_done = on_done
+  state.running = true
+
   state.on_tick = on_tick
   state.on_done = on_done
   state.running = true
@@ -106,7 +112,6 @@ function M.start(on_tick, on_done)
       state.on_tick(state.session, state.seconds_left)
     end
 
-    -- fire milestone notifications before decrementing
     notify_milestone(state.seconds_left)
 
     if state.seconds_left <= 0 then
@@ -128,21 +133,18 @@ function M.start(on_tick, on_done)
   end))
 end
 
--- Pause: stop the uv handle but keep seconds_left and callbacks intact
 function M.pause()
   if not state.running then return end
   state.running = false
   stop_handle()
 end
 
--- Resume: restart the tick using the saved callbacks
 function M.resume()
   if state.running then return end
   if not state.on_tick or not state.on_done then return end
   M.start(state.on_tick, state.on_done)
 end
 
--- Full stop: clears everything
 function M.stop()
   state.running = false
   state.on_tick = nil

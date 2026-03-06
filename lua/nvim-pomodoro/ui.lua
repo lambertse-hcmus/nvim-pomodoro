@@ -81,7 +81,20 @@ local function fmt_time(secs)
 end
 
 local function is_open()
-  return state.win ~= nil and vim.api.nvim_win_is_valid(state.win)
+  if state.win ~= nil and vim.api.nvim_win_is_valid(state.win) then
+    return true
+  end
+  -- Fallback: scan all windows for a pomodoro buffer
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local ok, ft = pcall(vim.api.nvim_buf_get_option, buf, "filetype")
+    if ok and ft == "pomodoro" then
+      state.win = win   
+      state.buf = buf
+      return true
+    end
+  end
+  return false
 end
 
 local function space_around(items, width)
@@ -291,6 +304,14 @@ end
 -- ── window management ──────────────────────────────────────────────────────
 
 function M._open_win()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local ok, ft = pcall(vim.api.nvim_buf_get_option, buf, "filetype")
+    if ok and ft == "pomodoro" and win ~= state.win then
+      pcall(vim.api.nvim_win_close, win, true)
+    end
+  end
+
   if is_open() then return end
 
   state.buf = vim.api.nvim_create_buf(false, true)

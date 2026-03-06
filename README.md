@@ -6,7 +6,7 @@
 
 ![Neovim](https://img.shields.io/badge/Neovim-0.9%2B-57A143?style=flat-square&logo=neovim&logoColor=white)
 ![Lua](https://img.shields.io/badge/Lua-100%25-2C2D72?style=flat-square&logo=lua&logoColor=white)
-![License](https://img.shields.io/github/license/lambertse-hcmus/nvim-pomodoro?style=flat-square)
+![License](https://img.shields.io/github/license/lambertse/nvim-pomodoro?style=flat-square)
 
 </div>
 
@@ -49,7 +49,7 @@
 
 ```lua
 {
-  "lambertse-hcmus/nvim-pomodoro",
+  "lambertse/nvim-pomodoro",
   config = function()
     require("nvim-pomodoro").setup()
   end,
@@ -60,7 +60,7 @@
 
 ```lua
 use {
-  "lambertse-hcmus/nvim-pomodoro",
+  "lambertse/nvim-pomodoro",
   config = function()
     require("nvim-pomodoro").setup()
   end,
