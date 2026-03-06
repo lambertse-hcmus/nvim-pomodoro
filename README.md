@@ -171,4 +171,4 @@ vim.api.nvim_set_hl(0, "PomodoroClockPulse", { fg = "#ffffff", bold = true })
 
 ## 📄 License
 
-MIT © [lambertse-hcmus](https://github.com/lambertse-hcmus)
+MIT © [lambertse](https://github.com/lambertse)
