@@ -40,7 +40,7 @@
 - 🪟 **Detach mode** — close the popup while the timer keeps running in the background
 - ⌨️ **Keyboard-first UI** — every action reachable without leaving the home row
 - 💤 **Zero dependencies** — pure Lua, uses only `vim.loop` (libuv already in Neovim)
-
+-  Sound **optional** via `vim.notify` (works with `nvim-notify` if installed, or any custom `vim.notify` implementation) **(CURRENTLY ONLY SUPPORT MACOS)**
 ---
 
 ## 📦 Installation
@@ -80,6 +80,24 @@ require("nvim-pomodoro").setup({
   long_break_time          = 15,   -- minutes
   cycles_before_long_break = 4,    -- focus sessions before a long break
   keymap                   = "<leader>p",
+  sound = {
+    enabled          = true,
+    volume           = 0.7,
+    backend          = "auto",
+    tick_interval_ms = 1300,   -- Basso.aiff is ~1.2s
+    events = {
+      start     = true,
+      done      = true,
+      milestone = true,
+      tick      = false,
+    },
+    files = {
+      start     = "/System/Library/Sounds/Glass.aiff",
+      done      = "/System/Library/Sounds/Hero.aiff",
+      milestone = "/System/Library/Sounds/Tink.aiff",
+      tick      = "/System/Library/Sounds/Basso.aiff",
+    },
+  },
 })
 ```
 

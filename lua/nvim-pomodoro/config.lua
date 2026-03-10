@@ -9,13 +9,13 @@ M.defaults = {
   -- Sound configuration
   sound = {
     enabled = true,
-    volume  = 1,
+    volume  = 0.7,    -- 0.0 to 1.0
     backend = "auto",
     events  = {
       start     = true,
       done      = true,
       milestone = true,
-      tick      = true,   -- off by default, can be noisy
+      tick      = false,   -- off by default, can be noisy
     },
     files = {
       start     = nil,     -- nil = use bundled default
