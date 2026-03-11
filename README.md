@@ -24,9 +24,9 @@
 
 ---
 
-## 🎬 Demo
-
-> ![demo](assets/demo.gif)
+<!-- ## 🎬 Demo -->
+<!---->
+<!-- > ![demo](assets/demo.gif) -->
 
 ---
 
@@ -40,7 +40,8 @@
 - 🪟 **Detach mode** — close the popup while the timer keeps running in the background
 - ⌨️ **Keyboard-first UI** — every action reachable without leaving the home row
 - 💤 **Zero dependencies** — pure Lua, uses only `vim.loop` (libuv already in Neovim)
--  Sound **optional** via `vim.notify` (works with `nvim-notify` if installed, or any custom `vim.notify` implementation) **(CURRENTLY ONLY SUPPORT MACOS)**
+- 🎵 Sound **optional** via `vim.notify` (works with `nvim-notify` if installed, or any custom `vim.notify` implementation) **(CURRENTLY ONLY SUPPORT MACOS)**
+- ⚡ **Blurred background** (optional) to help you focus on the timer and block out distractions
 ---
 
 ## 📦 Installation
@@ -51,7 +52,9 @@
 {
   "lambertse/nvim-pomodoro",
   config = function()
-    require("nvim-pomodoro").setup()
+    require("nvim-pomodoro").setup({
+      -- config options here, or leave empty to use defaults
+    })
   end,
 }
 ```
@@ -62,7 +65,9 @@
 use {
   "lambertse/nvim-pomodoro",
   config = function()
-    require("nvim-pomodoro").setup()
+    require("nvim-pomodoro").setup({
+      -- config options here, or leave empty to use defaults
+    })
   end,
 }
 ```
@@ -84,18 +89,19 @@ require("nvim-pomodoro").setup({
     enabled          = true,
     volume           = 0.7,
     backend          = "auto",
-    tick_interval_ms = 1300,   -- Basso.aiff is ~1.2s
     events = {
       start     = true,
       done      = true,
       milestone = true,
       tick      = false,
+      urgent    = true,  -- For the final 10 seconds of a session
     },
     files = {
       start     = "/System/Library/Sounds/Glass.aiff",
       done      = "/System/Library/Sounds/Hero.aiff",
       milestone = "/System/Library/Sounds/Tink.aiff",
       tick      = "/System/Library/Sounds/Basso.aiff",
+      urgent    = "/System/Library/Sounds/Glass.aiff",
     },
   },
 })
@@ -135,6 +141,7 @@ Automatic reminders fire once per session at:
 | 5 minutes | ⏳ 5 minutes left! |
 | 1 minute | ⚡ 1 minute left! |
 | 30 seconds | 🔔 30 seconds left! |
+| Final 10 seconds | 🚨 Time's almost up! & sound |
 
 Works with the built-in `vim.notify` and enhanced with [nvim-notify](https://github.com/rcarriga/nvim-notify) if installed.
 
@@ -144,14 +151,20 @@ Works with the built-in `vim.notify` and enhanced with [nvim-notify](https://git
 
 ```
 nvim-pomodoro/
+├── README.md
+├── LICENSE
 └── lua/
     └── nvim-pomodoro/
-        ├── init.lua      -- Entry point, setup(), user command & keymap
-        ├── config.lua    -- Default options and merge helper
-        ├── timer.lua     -- Core timer logic (vim.loop, pause/resume, milestones)
-        ├── ui.lua        -- Floating popup, big-digit clock, highlights, keymaps
-        └── notify.lua    -- Session-end notifications
-```
+        ├── init.lua              -- Entry point: setup(), M._initialized guard,
+        ├── config.lua            -- Default options, deep merge helper,
+        ├── timer.lua             -- Core timer: vim.loop uv handle, start/stop/pause/resume,
+        ├── notify.lua            -- Session-end notifications via vim.notify,
+        ├── ui.lua                -- Floating popup, backdrop dim window,
+        └── sound/
+            ├── init.lua          -- Public API: sound.setup(), sound.play(), sound.toggle(),
+            └── backend/
+                ├── macos.lua     -- afplay via vim.loop.spawn, skip-if
+```
 
 ---
 
